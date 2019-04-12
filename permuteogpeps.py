@@ -8,7 +8,7 @@ H = 1.007276
 class ogpeps:
     def __init__(self, charge_list=[1]):
         self.charge_list = charge_list
-        f = r'C:\Users\choom.000\Google Drive\Postdoc\045 Calnexin Bard\Masses of sCANX O-glycopeptides.xlsx'
+        f = r'C:\Users\choom.000\Google Drive\Postdoc\045 Calnexin Bard\Masses of sCANX O-glycopeptides SHORTLIST.xlsx'
         self.df = pd.read_excel(f, skiprows=[1])
 
         self.clean_peptides()
@@ -27,7 +27,7 @@ class ogpeps:
     def get_flattened_pep_list(self):
         # first get the charge states
         charged_pep_list = np.array([])
-        ground_state_df = self.df.loc[:, ['PEP', 'Peptide', 'N1', 'N1H1', 'N2', 'N1H1S1', 'N1H1S2']].iloc[1:].set_index('PEP')
+        ground_state_df = self.df.iloc[:, 1:].set_index('PEP')
 
 
         for z in self.charge_list:
@@ -46,8 +46,12 @@ class ogpeps:
         result_df = pd.DataFrame()
         result_df['m/z'] = res_df.iloc[:,0].apply(lambda x: x[0])
         result_df['z'] = res_df.iloc[:,0].apply(lambda x: x[1])
+        result_df = result_df.loc[result_df.iloc[:, 0].between(300, 2000)].sort_values('m/z', axis=0)
+
 
         self.hit_list_df = result_df
+        # self.hit_list_df = self.hit_list_df.loc[self.hit_list_df.iloc[:, 0].between(300, 2000)]
+
         return result_df
 
 
@@ -60,4 +64,4 @@ class ogpeps:
 
 if __name__ == '__main__':
     o = ogpeps(charge_list=[2,3,4,5])
-    o.export_hitlist(file_name='scanx ogpep hitlist for fusion')
+    o.export_hitlist(file_name='scanx SHORT ogpep hitlist for fusion')
